@@ -15,7 +15,7 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
     @IsOptional()
     @IsNumber()
     @IsNotEmpty()
-    price?: number;
+    price?: string;
   
     @ApiProperty({ required: false, type: Number, description: 'Stock disponible del producto' })
     @IsOptional()

@@ -31,7 +31,7 @@ export class CloudinaryService {
         cloudinary.uploader
           .upload_stream({ folder: 'product-photos' }, (error, result) => {
             if (error) {
-              throw new Error(error.message);
+              reject(new Error(error.message));
             } else {
               resolve({
                 url: result.secure_url,

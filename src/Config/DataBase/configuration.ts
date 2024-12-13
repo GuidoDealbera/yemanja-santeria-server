@@ -16,5 +16,5 @@ export default registerAs('database',  () => ({
     entities: [User, Product, Purchase, Order],
     synchronize: true,
     logging: false,
-    dropSchema: true
+    dropSchema: false
 }))

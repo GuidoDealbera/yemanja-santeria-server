@@ -7,14 +7,14 @@ export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'character varying', length: 50 })
+  @Column({ type: 'character varying', length: 50, unique: true })
   name: string;
 
   @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number;
+  price: string;
 
   @Column({ type: 'integer' })
   stock: number;

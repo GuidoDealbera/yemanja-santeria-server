@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Param, Put, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, HttpException, HttpStatus, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { FindByIdDto } from './dto/findById.dto';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { validate as IsUUID } from 'uuid';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Products')
 @Controller('products')
@@ -12,30 +12,32 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiBearerAuth()
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @UseInterceptors(FilesInterceptor('files'))
+  @Post('create')
+  async create(@Body() createProductDto: CreateProductDto, @UploadedFiles() files: Express.Multer.File[]) {
+    return await this.productsService.create(createProductDto, files);
   }
 
+  @ApiQuery({name: 'name', required: false})
   @Get()
-  findAll() {
-    return this.productsService.findAll({purchases: true});
+  async findAll(@Query('name') query?: string) {
+    return await this.productsService.findAll({purchases: true}, query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: FindByIdDto['id']) {
+  async findOne(@Param('id') id: string) {
     if (!IsUUID(id)) {
       throw new HttpException('Id inválido', HttpStatus.BAD_REQUEST);
     }
-    return this.productsService.findById(id);
+    return await this.productsService.findById(id);
   }
   
   @ApiBearerAuth()
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @UploadedFiles() files?: Express.Multer.File[]) {
     if (!IsUUID(id)) {
       throw new HttpException('Id inválido', HttpStatus.BAD_REQUEST);
     }
-    return this.productsService.update(id, updateProductDto);
+    return await this.productsService.update(id, updateProductDto, files);
   }
 }

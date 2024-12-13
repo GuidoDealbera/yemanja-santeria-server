@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDecimal, IsNotEmpty, IsNumber, IsPositive, IsString, Length } from 'class-validator';
-import { ImageDto } from './image.dto';
+import { IsDecimal, IsNotEmpty, IsNumber, IsString, Length, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
   @ApiProperty()
@@ -16,19 +16,14 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty()
-  @IsPositive()
-  @IsNumber()
-  @IsDecimal()
+  @IsDecimal({decimal_digits: '2'})
   @IsNotEmpty()
-  price: number;
+  price: string;
 
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
+  @Min(0)
   stock: number;
-
-  @ApiProperty({ type: [ImageDto], description: 'Lista de imágenes del producto' })
-  @IsArray()
-  @IsNotEmpty()
-  images: ImageDto[];
 }
